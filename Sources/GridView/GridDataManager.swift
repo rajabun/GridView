@@ -91,11 +91,11 @@ public class GridDataManager<T: Hashable>: ObservableObject {
 }
 
 public struct RowPriorityData<T: Hashable> {
-    let row: Int
-    let data: T
+    public let row: Int
+    public let data: T
 }
 
 public struct ColumnPriorityData<T: Hashable> {
-    let column: Int
-    let data: T
+    public let column: Int
+    public let data: T
 }
