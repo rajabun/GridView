@@ -90,12 +90,12 @@ public class GridDataManager<T: Hashable>: ObservableObject {
     }
 }
 
-struct RowPriorityData<T: Hashable> {
+public struct RowPriorityData<T: Hashable> {
     let row: Int
     let data: T
 }
 
-struct ColumnPriorityData<T: Hashable> {
+public struct ColumnPriorityData<T: Hashable> {
     let column: Int
     let data: T
 }

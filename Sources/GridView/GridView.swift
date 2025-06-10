@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 13.0, *)
-struct GridView<Content: View, T: Hashable>: View {
+public struct GridView<Content: View, T: Hashable>: View {
     @ViewBuilder var rowContentView: (RowPriorityData<T>) -> any View
     @ViewBuilder var columnContentView: (ColumnPriorityData<T>) -> any View
     var gridData: GridDataManager<T>
@@ -17,10 +17,11 @@ struct GridView<Content: View, T: Hashable>: View {
     var rowSpacing: CGFloat
     var columnSpacing: CGFloat
     
-    init(gridData: [T], maxRowElement: Int,
-         rowPriorityAlignment: HorizontalAlignment,
-         rowSpacing: CGFloat, columnSpacing: CGFloat,
-         rowContentView: @escaping (RowPriorityData<T>) -> Content) {
+    public init(gridData: [T],
+                maxRowElement: Int,
+                rowPriorityAlignment: HorizontalAlignment,
+                rowSpacing: CGFloat, columnSpacing: CGFloat,
+                rowContentView: @escaping (RowPriorityData<T>) -> Content) {
         self.columnContentView = { _ in AnyView(HStack { Text("Empty") })}
         self.columnPriorityAlignment = .top
         self.gridData = GridDataManager(isRowPriority: true,
@@ -34,10 +35,11 @@ struct GridView<Content: View, T: Hashable>: View {
         self.rowContentView = rowContentView
     }
     
-    init(gridData: [T], maxColumnElement: Int,
-         columnPriorityAlignment: VerticalAlignment,
-         rowSpacing: CGFloat, columnSpacing: CGFloat,
-         columnContentView: @escaping (ColumnPriorityData<T>) -> Content) {
+    public init(gridData: [T],
+                maxColumnElement: Int,
+                columnPriorityAlignment: VerticalAlignment,
+                rowSpacing: CGFloat, columnSpacing: CGFloat,
+                columnContentView: @escaping (ColumnPriorityData<T>) -> Content) {
         self.rowContentView = { _ in AnyView(VStack { Text("Empty") })}
         self.rowPriorityAlignment = .trailing
         self.gridData = GridDataManager(isRowPriority: false,
@@ -51,7 +53,7 @@ struct GridView<Content: View, T: Hashable>: View {
         self.columnContentView = columnContentView
     }
     
-    var body: some View {
+    public var body: some View {
         if gridData.accessIsRowPriority() {
             VStack(alignment: rowPriorityAlignment, spacing: rowSpacing) { //HStack for based on Column, VStack for Row
                 ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
