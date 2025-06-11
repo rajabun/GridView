@@ -9,7 +9,7 @@
 import Foundation
 
 @available(iOS 13.0, *)
-public class GridDataManager<T: Hashable>: ObservableObject {
+class GridDataManager<T: Hashable>: ObservableObject {
     @Published private var rowDataArray: [[RowPriorityData<T>]] = [[]]
     @Published private var columnDataArray: [[ColumnPriorityData<T>]] = [[]]
     private var rowData: [RowPriorityData<T>] = []
@@ -50,11 +50,11 @@ public class GridDataManager<T: Hashable>: ObservableObject {
         return isColumnPriority
     }
 
-    public func getRowTotalCount() -> Int {
+    func getRowTotalCount() -> Int {
         return accessRowDataArray().count
     }
 
-    public func getColumnTotalCount() -> Int {
+    func getColumnTotalCount() -> Int {
         return accessColumnDataArray().count
     }
 

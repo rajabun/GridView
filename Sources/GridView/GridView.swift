@@ -14,15 +14,15 @@ import SwiftUI
 /// You can create the grid based on column priority or row priority.
 ///
 /// Column priority will prioritize elements to fill column first,
-/// then if column is reached maximum based on ``maxColumnElement``
+/// then if column is reached maximum based on `maxColumnElement`
 /// it will create a new column to the right of the existing column
 ///
 /// Row priority will prioritize elements to fill row first,
-/// then if row is reached maximum based on ``maxRowElement``
+/// then if row is reached maximum based on `maxRowElement`
 /// it will create a new row below the current row
 ///
-/// Use init with ``maxColumnElement`` to choose column priority and
-/// use init with ``maxRowElement`` to choose row priority.
+/// Use init with `maxColumnElement` to choose column priority and
+/// use init with `maxRowElement` to choose row priority.
 ///
 /// Below is an example to create grid view based on column priority:
 ///
@@ -35,7 +35,7 @@ import SwiftUI
 ///                                 price: column.data.title)
 ///         }
 ///     }
-/// ``YourContentView`` is your custom view.
+/// `YourContentView` is your custom view.
 ///
 @available(iOS 13.0, *)
 public struct GridView<Content: View, T: Hashable>: View {
@@ -158,7 +158,7 @@ public struct GridView<Content: View, T: Hashable>: View {
     ///
     /// - Parameter axis: Set this to horizontal or vertical
     @ViewBuilder
-    public func makeGridScrollable(_ axis: Axis.Set) -> some View {
+    func makeGridScrollable(_ axis: Axis.Set) -> some View {
         ScrollView(axis) {
             self
         }
@@ -169,7 +169,7 @@ public struct GridView<Content: View, T: Hashable>: View {
     /// - Minimum iOS 14.0
     @available(iOS 14.0, *)
     @ViewBuilder
-    public func addLazyLoad() -> some View {
+    func addLazyLoad() -> some View {
         lazyLoadContentView()
     }
 }
