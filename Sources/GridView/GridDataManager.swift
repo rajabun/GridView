@@ -3,6 +3,7 @@
 //  GridView
 //
 //  Created by Muhammad Rajab on 04-06-2025.
+//  Copyright © 2025 Muhammad Rajab. All rights reserved.
 //
 
 import Foundation

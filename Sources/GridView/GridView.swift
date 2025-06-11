@@ -3,10 +3,40 @@
 //  GridView
 //
 //  Created by Muhammad Rajab on 04-06-2025.
+//  Copyright © 2025 Muhammad Rajab. All rights reserved.
 //
 
 import SwiftUI
 
+/// Collection of views based on row and column
+///
+/// Grid View is useful to show collection of views based on row and column.
+/// You can create the grid based on column priority or row priority.
+///
+/// Column priority will prioritize elements to fill column first,
+/// then if column is reached maximum based on ``maxColumnElement``
+/// it will create a new column to the right of the existing column
+///
+/// Row priority will prioritize elements to fill row first,
+/// then if row is reached maximum based on ``maxRowElement``
+/// it will create a new row below the current row
+///
+/// Use init with ``maxColumnElement`` to choose column priority and
+/// use init with ``maxRowElement`` to choose row priority.
+///
+/// Below is an example to create grid view based on column priority:
+///
+///     var body: some View {
+///         GridView(gridData: data,
+///                 maxColumnElement: 3,
+///                 columnPriorityAlignment: .top,
+///                 rowSpacing: 8, columnSpacing: 8) { column in
+///                 YourContentView(image: column.data.icon,
+///                                 price: column.data.title)
+///         }
+///     }
+/// ``YourContentView`` is your custom view.
+///
 @available(iOS 13.0, *)
 public struct GridView<Content: View, T: Hashable>: View {
     @ViewBuilder var rowContentView: (RowPriorityData<T>) -> any View
@@ -17,6 +47,14 @@ public struct GridView<Content: View, T: Hashable>: View {
     var rowSpacing: CGFloat
     var columnSpacing: CGFloat
     
+    /// Use this to make the grid prioritize the row to be filled.
+    ///
+    /// - Parameter gridData: Data for the grid content
+    /// - Parameter maxRowElement: Maximum amount of elements in a row
+    /// - Parameter rowPriorityAlignment: Priority alignment for amount of elements when row isn't fully filled
+    /// - Parameter rowSpacing: Spacing between rows
+    /// - Parameter columnSpacing: Spacing between columns
+    /// - Parameter rowContentView: View for each elements
     public init(gridData: [T],
                 maxRowElement: Int,
                 rowPriorityAlignment: HorizontalAlignment,
@@ -35,6 +73,14 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.rowContentView = rowContentView
     }
     
+    /// Use this to make the grid prioritize the column to be filled.
+    ///
+    /// - Parameter gridData: Data for the grid content
+    /// - Parameter maxColumnElement: Maximum amount of elements in a column
+    /// - Parameter columnPriorityAlignment: Priority alignment for amount of elements when column isn't fully filled
+    /// - Parameter rowSpacing: Spacing between rows
+    /// - Parameter columnSpacing: Spacing between columns
+    /// - Parameter columnContentView: View for each elements
     public init(gridData: [T],
                 maxColumnElement: Int,
                 columnPriorityAlignment: VerticalAlignment,
