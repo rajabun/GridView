@@ -100,6 +100,11 @@ public struct GridView<Content: View, T: Hashable>: View {
     }
     
     public var body: some View {
+        contentView()
+    }
+    
+    @ViewBuilder
+    private func contentView() -> some View {
         if gridData.accessIsRowPriority() {
             VStack(alignment: rowPriorityAlignment, spacing: rowSpacing) { //HStack for based on Column, VStack for Row
                 ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
@@ -121,6 +126,51 @@ public struct GridView<Content: View, T: Hashable>: View {
                 }
             }
         }
+    }
+    
+    @available(iOS 14.0, *)
+    @ViewBuilder
+    private func lazyLoadContentView() -> some View {
+        if gridData.accessIsRowPriority() {
+            LazyVStack(alignment: rowPriorityAlignment, spacing: rowSpacing) {
+                ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
+                    LazyHStack(spacing: columnSpacing) {
+                        ForEach(gridData.accessRowDataArray()[index], id: \.data) { element in
+                            AnyView(rowContentView(element))
+                        }
+                    }
+                }
+            }
+        } else if gridData.accessIsColumnPriority() {
+            LazyHStack(alignment: columnPriorityAlignment, spacing: columnSpacing) {
+                ForEach(Array(gridData.accessColumnDataArray().enumerated()), id: \.offset) { index, element in
+                    LazyVStack(spacing: rowSpacing) {
+                        ForEach(gridData.accessColumnDataArray()[index], id: \.data) { element in
+                            AnyView(columnContentView(element))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /// Use this to make grid can be scrolled based on axis parameter
+    ///
+    /// - Parameter axis: Set this to horizontal or vertical
+    @ViewBuilder
+    public func makeGridScrollable(_ axis: Axis.Set) -> some View {
+        ScrollView(axis) {
+            self
+        }
+    }
+    
+    /// Use this to make contents lazy loaded on grid view. Useful when the received data is large
+    ///
+    /// - Minimum iOS 14.0
+    @available(iOS 14.0, *)
+    @ViewBuilder
+    public func addLazyLoad() -> some View {
+        lazyLoadContentView()
     }
 }
 
