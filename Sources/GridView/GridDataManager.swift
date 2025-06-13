@@ -10,17 +10,18 @@ import Foundation
 
 @available(iOS 13.0, *)
 class GridDataManager<T: Hashable>: ObservableObject {
-    @Published private var rowDataArray: [[GridDataModel<T>]] = [[]]
-    @Published private var columnDataArray: [[GridDataModel<T>]] = [[]]
-    private var rowData: [GridDataModel<T>] = []
-    private var columnData: [GridDataModel<T>] = []
+    @Published private var elementDataArray: [[GridDataModel<T>]]
+    private var elementData: [GridDataModel<T>]
     private var isRowPriority: Bool
     private var isColumnPriority: Bool
     private var maxRowElement: Int
     private var maxColumnElement: Int
     private var data: [T]
     
-    init(isRowPriority: Bool, isColumnPriority: Bool, maxRowElement: Int, maxColumnElement: Int, data: [T]) {
+    init(elementDataArray: [[GridDataModel<T>]] = [[]], elementData: [GridDataModel<T>] = [],
+         isRowPriority: Bool, isColumnPriority: Bool, maxRowElement: Int, maxColumnElement: Int, data: [T]) {
+        self.elementDataArray = elementDataArray
+        self.elementData = elementData
         self.isRowPriority = isRowPriority
         self.isColumnPriority = isColumnPriority
         self.maxRowElement = maxRowElement
@@ -34,12 +35,8 @@ class GridDataManager<T: Hashable>: ObservableObject {
         dataProcessing()
     }
 
-    func accessRowDataArray() -> [[GridDataModel<T>]] {
-        return rowDataArray
-    }
-
-    func accessColumnDataArray() -> [[GridDataModel<T>]] {
-        return columnDataArray
+    func accessElementDataArray() -> [[GridDataModel<T>]] {
+        return elementDataArray
     }
     
     func accessIsRowPriority() -> Bool {
@@ -50,44 +47,25 @@ class GridDataManager<T: Hashable>: ObservableObject {
         return isColumnPriority
     }
 
-    func getRowTotalCount() -> Int {
-        return accessRowDataArray().count
-    }
-
-    func getColumnTotalCount() -> Int {
-        return accessColumnDataArray().count
+    func getElementTotalCount() -> Int {
+        return accessElementDataArray().count
     }
 
     private func dataProcessing() {
-        if isRowPriority {
-            var indexRow: Int = 1
-            var indexMaxRow: Int = 0
-            for input in data {
-                //Fill data based on row
-                let rowSingleData = GridDataModel(row: indexRow, column: indexMaxRow+1, data: input)
-                self.rowData.append(rowSingleData)
-                indexMaxRow+=1
-                if indexMaxRow == maxRowElement {
-                    indexMaxRow = 0
-                    indexRow+=1
-                }
+        var indexElement: Int = 1
+        var indexMaxElement: Int = 0
+        for input in data {
+            let rowSingleData = GridDataModel(row: isRowPriority ? indexElement : indexMaxElement+1,
+                                              column: isColumnPriority ? indexElement : indexMaxElement+1,
+                                              data: input)
+            self.elementData.append(rowSingleData)
+            indexMaxElement+=1
+            if (isRowPriority && indexMaxElement == maxRowElement) || (isColumnPriority && indexMaxElement == maxColumnElement) {
+                indexMaxElement = 0
+                indexElement+=1
             }
-            rowDataArray = (Dictionary(grouping: rowData, by: { $0.row })).sorted(by: { $0.key < $1.key }).map({ $0.value })
-        } else if isColumnPriority {
-            var indexColumn: Int = 1
-            var indexMaxColumn: Int = 0
-            for input in data {
-                //Fill data based on column
-                let columnSingleData = GridDataModel(row: indexMaxColumn+1,column: indexColumn, data: input)
-                self.columnData.append(columnSingleData)
-                indexMaxColumn+=1
-                if indexMaxColumn == maxColumnElement {
-                    indexMaxColumn = 0
-                    indexColumn+=1
-                }
-            }
-            columnDataArray = (Dictionary(grouping: columnData, by: { $0.column })).sorted(by: { $0.key < $1.key }).map({ $0.value })
         }
+        elementDataArray = (Dictionary(grouping: elementData, by: { isRowPriority ? $0.row : $0.column })).sorted(by: { $0.key < $1.key }).map({ $0.value })
     }
 }
 

@@ -111,9 +111,9 @@ public struct GridView<Content: View, T: Hashable>: View {
     private func contentView() -> some View {
         if gridData.accessIsRowPriority() {
             VStack(alignment: rowPriorityAlignment, spacing: rowSpacing) { //HStack for based on Column, VStack for Row
-                ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
+                ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     HStack(spacing: columnSpacing) { //VStack for based on Column, HStack for Row
-                        ForEach(gridData.accessRowDataArray()[index], id: \.column) { element in
+                        ForEach(gridData.accessElementDataArray()[index], id: \.column) { element in
                             AnyView(rowContentView(element))
                         }
                     }
@@ -121,9 +121,9 @@ public struct GridView<Content: View, T: Hashable>: View {
             }
         } else if gridData.accessIsColumnPriority() {
             HStack(alignment: columnPriorityAlignment, spacing: columnSpacing) { //HStack for based on Column, VStack for Row
-                ForEach(Array(gridData.accessColumnDataArray().enumerated()), id: \.offset) { index, element in
+                ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     VStack(spacing: rowSpacing) { //VStack for based on Column, HStack for Row
-                        ForEach(gridData.accessColumnDataArray()[index], id: \.row) { element in
+                        ForEach(gridData.accessElementDataArray()[index], id: \.row) { element in
                             AnyView(columnContentView(element))
                         }
                     }
@@ -140,9 +140,9 @@ public struct GridView<Content: View, T: Hashable>: View {
     private func lazyLoadContentView() -> some View {
         if gridData.accessIsRowPriority() {
             LazyVStack(alignment: rowPriorityAlignment, spacing: rowSpacing) {
-                ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
+                ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     LazyHStack(spacing: columnSpacing) {
-                        ForEach(gridData.accessRowDataArray()[index], id: \.column) { element in
+                        ForEach(gridData.accessElementDataArray()[index], id: \.column) { element in
                             AnyView(rowContentView(element))
                         }
                     }
@@ -151,9 +151,9 @@ public struct GridView<Content: View, T: Hashable>: View {
             .padding(.leading, 8)
         } else if gridData.accessIsColumnPriority() {
             LazyHStack(alignment: columnPriorityAlignment, spacing: columnSpacing) {
-                ForEach(Array(gridData.accessColumnDataArray().enumerated()), id: \.offset) { index, element in
+                ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     LazyVStack(spacing: rowSpacing) {
-                        ForEach(gridData.accessColumnDataArray()[index], id: \.row) { element in
+                        ForEach(gridData.accessElementDataArray()[index], id: \.row) { element in
                             AnyView(columnContentView(element))
                         }
                     }
