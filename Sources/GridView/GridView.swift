@@ -165,9 +165,10 @@ public struct GridView<Content: View, T: Hashable>: View {
     /// Use this to make grid can be scrolled based on axis parameter
     ///
     /// - Parameter axis: Set this to horizontal or vertical
+    /// - Parameter isIndicatorShown: For show/hide scroll indicator
     @ViewBuilder
-    func makeGridScrollable(_ axis: Axis.Set) -> some View {
-        ScrollView(axis) {
+    func makeGridScrollable(_ axis: Axis.Set, isIndicatorShown: Bool = false) -> some View {
+        ScrollView(axis, showsIndicators: isIndicatorShown) {
             self
         }
     }
