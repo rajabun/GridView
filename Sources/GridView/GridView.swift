@@ -100,7 +100,11 @@ public struct GridView<Content: View, T: Hashable>: View {
     }
     
     public var body: some View {
-        contentView()
+        if #available(iOS 14.0, *) {
+            lazyLoadContentView()
+        } else {
+            contentView()
+        }
     }
     
     @ViewBuilder
@@ -128,6 +132,9 @@ public struct GridView<Content: View, T: Hashable>: View {
         }
     }
     
+    /// Use this to make contents lazy loaded on grid view. Useful when the received data is large
+    ///
+    /// - Minimum iOS 14.0
     @available(iOS 14.0, *)
     @ViewBuilder
     private func lazyLoadContentView() -> some View {
@@ -135,17 +142,18 @@ public struct GridView<Content: View, T: Hashable>: View {
             LazyVStack(alignment: rowPriorityAlignment, spacing: rowSpacing) {
                 ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
                     LazyHStack(spacing: columnSpacing) {
-                        ForEach(gridData.accessRowDataArray()[index], id: \.data) { element in
+                        ForEach(gridData.accessRowDataArray()[index], id: \.column) { element in
                             AnyView(rowContentView(element))
                         }
                     }
                 }
             }
+            .padding(.leading, 8)
         } else if gridData.accessIsColumnPriority() {
             LazyHStack(alignment: columnPriorityAlignment, spacing: columnSpacing) {
                 ForEach(Array(gridData.accessColumnDataArray().enumerated()), id: \.offset) { index, element in
                     LazyVStack(spacing: rowSpacing) {
-                        ForEach(gridData.accessColumnDataArray()[index], id: \.data) { element in
+                        ForEach(gridData.accessColumnDataArray()[index], id: \.row) { element in
                             AnyView(columnContentView(element))
                         }
                     }
@@ -162,15 +170,6 @@ public struct GridView<Content: View, T: Hashable>: View {
         ScrollView(axis) {
             self
         }
-    }
-    
-    /// Use this to make contents lazy loaded on grid view. Useful when the received data is large
-    ///
-    /// - Minimum iOS 14.0
-    @available(iOS 14.0, *)
-    @ViewBuilder
-    func addLazyLoad() -> some View {
-        lazyLoadContentView()
     }
 }
 
