@@ -10,10 +10,10 @@ import Foundation
 
 @available(iOS 13.0, *)
 class GridDataManager<T: Hashable>: ObservableObject {
-    @Published private var rowDataArray: [[RowPriorityData<T>]] = [[]]
-    @Published private var columnDataArray: [[ColumnPriorityData<T>]] = [[]]
-    private var rowData: [RowPriorityData<T>] = []
-    private var columnData: [ColumnPriorityData<T>] = []
+    @Published private var rowDataArray: [[GridDataModel<T>]] = [[]]
+    @Published private var columnDataArray: [[GridDataModel<T>]] = [[]]
+    private var rowData: [GridDataModel<T>] = []
+    private var columnData: [GridDataModel<T>] = []
     private var isRowPriority: Bool
     private var isColumnPriority: Bool
     private var maxRowElement: Int
@@ -34,11 +34,11 @@ class GridDataManager<T: Hashable>: ObservableObject {
         dataProcessing()
     }
 
-    func accessRowDataArray() -> [[RowPriorityData<T>]] {
+    func accessRowDataArray() -> [[GridDataModel<T>]] {
         return rowDataArray
     }
 
-    func accessColumnDataArray() -> [[ColumnPriorityData<T>]] {
+    func accessColumnDataArray() -> [[GridDataModel<T>]] {
         return columnDataArray
     }
     
@@ -61,16 +61,16 @@ class GridDataManager<T: Hashable>: ObservableObject {
     private func dataProcessing() {
         if isRowPriority {
             var indexRow: Int = 1
-            var indexData: Int = 1
+            var indexMaxRow: Int = 0
             for input in data {
                 //Fill data based on row
-                if indexData > maxRowElement {
-                    indexData = 1
+                let rowSingleData = GridDataModel(row: indexRow, column: indexMaxRow+1, data: input)
+                self.rowData.append(rowSingleData)
+                indexMaxRow+=1
+                if indexMaxRow == maxRowElement {
+                    indexMaxRow = 0
                     indexRow+=1
                 }
-                let rowSingleData = RowPriorityData(row: indexRow, data: input)
-                self.rowData.append(rowSingleData)
-                indexData+=1
             }
             rowDataArray = (Dictionary(grouping: rowData, by: { $0.row })).sorted(by: { $0.key < $1.key }).map({ $0.value })
         } else if isColumnPriority {
@@ -78,7 +78,7 @@ class GridDataManager<T: Hashable>: ObservableObject {
             var indexMaxColumn: Int = 0
             for input in data {
                 //Fill data based on column
-                let columnSingleData = ColumnPriorityData(column: indexColumn, data: input)
+                let columnSingleData = GridDataModel(row: indexMaxColumn+1,column: indexColumn, data: input)
                 self.columnData.append(columnSingleData)
                 indexMaxColumn+=1
                 if indexMaxColumn == maxColumnElement {
@@ -91,12 +91,8 @@ class GridDataManager<T: Hashable>: ObservableObject {
     }
 }
 
-public struct RowPriorityData<T: Hashable> {
+public struct GridDataModel<T: Hashable> {
     public let row: Int
-    public let data: T
-}
-
-public struct ColumnPriorityData<T: Hashable> {
     public let column: Int
     public let data: T
 }

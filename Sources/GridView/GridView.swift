@@ -28,19 +28,19 @@ import SwiftUI
 ///
 ///     var body: some View {
 ///         GridView(gridData: data,
-///                 maxColumnElement: 3,
-///                 columnPriorityAlignment: .top,
-///                 rowSpacing: 8, columnSpacing: 8) { column in
-///                 YourContentView(image: column.data.icon,
-///                                 price: column.data.title)
+///                  maxColumnElement: 3,
+///                  columnPriorityAlignment: .top,
+///                  rowSpacing: 8, columnSpacing: 8) { column in
+///                  YourContentView(image: column.data.image,
+///                                  title: column.data.title)
 ///         }
 ///     }
 /// `YourContentView` is your custom view.
 ///
 @available(iOS 13.0, *)
 public struct GridView<Content: View, T: Hashable>: View {
-    @ViewBuilder var rowContentView: (RowPriorityData<T>) -> any View
-    @ViewBuilder var columnContentView: (ColumnPriorityData<T>) -> any View
+    @ViewBuilder var rowContentView: (GridDataModel<T>) -> any View
+    @ViewBuilder var columnContentView: (GridDataModel<T>) -> any View
     var gridData: GridDataManager<T>
     var rowPriorityAlignment: HorizontalAlignment
     var columnPriorityAlignment: VerticalAlignment
@@ -59,7 +59,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                 maxRowElement: Int,
                 rowPriorityAlignment: HorizontalAlignment,
                 rowSpacing: CGFloat, columnSpacing: CGFloat,
-                rowContentView: @escaping (RowPriorityData<T>) -> Content) {
+                rowContentView: @escaping (GridDataModel<T>) -> Content) {
         self.columnContentView = { _ in AnyView(HStack { Text("Empty") })}
         self.columnPriorityAlignment = .top
         self.gridData = GridDataManager(isRowPriority: true,
@@ -85,7 +85,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                 maxColumnElement: Int,
                 columnPriorityAlignment: VerticalAlignment,
                 rowSpacing: CGFloat, columnSpacing: CGFloat,
-                columnContentView: @escaping (ColumnPriorityData<T>) -> Content) {
+                columnContentView: @escaping (GridDataModel<T>) -> Content) {
         self.rowContentView = { _ in AnyView(VStack { Text("Empty") })}
         self.rowPriorityAlignment = .trailing
         self.gridData = GridDataManager(isRowPriority: false,
@@ -109,7 +109,7 @@ public struct GridView<Content: View, T: Hashable>: View {
             VStack(alignment: rowPriorityAlignment, spacing: rowSpacing) { //HStack for based on Column, VStack for Row
                 ForEach(Array(gridData.accessRowDataArray().enumerated()), id: \.offset) { index, element in
                     HStack(spacing: columnSpacing) { //VStack for based on Column, HStack for Row
-                        ForEach(gridData.accessRowDataArray()[index], id: \.data) { element in
+                        ForEach(gridData.accessRowDataArray()[index], id: \.column) { element in
                             AnyView(rowContentView(element))
                         }
                     }
@@ -119,7 +119,7 @@ public struct GridView<Content: View, T: Hashable>: View {
             HStack(alignment: columnPriorityAlignment, spacing: columnSpacing) { //HStack for based on Column, VStack for Row
                 ForEach(Array(gridData.accessColumnDataArray().enumerated()), id: \.offset) { index, element in
                     VStack(spacing: rowSpacing) { //VStack for based on Column, HStack for Row
-                        ForEach(gridData.accessColumnDataArray()[index], id: \.data) { element in
+                        ForEach(gridData.accessColumnDataArray()[index], id: \.row) { element in
                             AnyView(columnContentView(element))
                         }
                     }
@@ -193,11 +193,11 @@ struct SomeView: View {
     
     var body: some View {
         GridView(gridData: data, maxColumnElement: 3, columnPriorityAlignment: .top, rowSpacing: 8, columnSpacing: 8) { data in
-            SingleContentView(iconColor: data.data.icon, price: data.data.price)
+            SingleContentView(iconColor: data.data.icon, price: "Row: \(data.row) Column: \(data.column)")
         }
         Spacer()
         GridView(gridData: data, maxRowElement: 4, rowPriorityAlignment: .leading, rowSpacing: 8, columnSpacing: 8) { data in
-            SingleContentView(iconColor: data.data.icon, price: data.data.price)
+            SingleContentView(iconColor: data.data.icon, price: "Row: \(data.row) Column: \(data.column)")
         }
     }
 }
