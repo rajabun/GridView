@@ -54,7 +54,7 @@ import SwiftUI
 ///        } paginationBlock: {
 ///            YourCustomFunction()
 ///        }
-///        .makeGridScrollable(.horizontal)
+///        .makeGridScrollable()
 ///
 /// Use `paginationBlock` to trigger your custom function when scroll reached edge
 @available(iOS 13.0, *)
@@ -263,13 +263,21 @@ public struct GridView<Content: View, T: Hashable>: View {
     
     /// Use this to make grid can be scrolled based on axis parameter
     ///
-    /// - Parameter axis: Set this to horizontal or vertical
+    /// - Parameter isParentScrollDisabled: Set this to true to make the view only have one way scroll
+    ///     - Only vertical scroll for row priority
+    ///     - Only horizontal scroll for column priority
     /// - Parameter isIndicatorShown: For show/hide scroll indicator
     @ViewBuilder
-    func makeGridScrollable(_ axis: Axis.Set, isIndicatorShown: Bool = false) -> some View {
-        ScrollView(axis, showsIndicators: isIndicatorShown) {
-            self
+    func makeGridScrollable(isParentScrollDisabled: Bool = false, isIndicatorShown: Bool = false) -> some View {
+        let childAxis: Axis.Set = gridData.accessIsRowPriority() ? .vertical : .horizontal
+        let parentAxis: Axis.Set = gridData.accessIsRowPriority() ? .horizontal : .vertical
+        
+        ScrollView(parentAxis, showsIndicators: isIndicatorShown) {
+            ScrollView(childAxis, showsIndicators: isIndicatorShown) {
+                self
+            }
+            .coordinateSpace(name: "gridScroll")
         }
-        .coordinateSpace(name: "gridScroll")
+        .disableScrolling(disabled: isParentScrollDisabled)
     }
 }

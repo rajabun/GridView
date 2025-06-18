@@ -101,3 +101,29 @@ extension UIScreen {
         UIWindow.current?.screen
     }
 }
+
+@available(iOS 13.0, *)
+extension View {
+    /// A backwards compatible wrapper for iOS 16 `scrollDisabled`
+    @ViewBuilder func disableScrolling(disabled: Bool) -> some View {
+        if #available(iOS 16.0, *) {
+            self.scrollDisabled(disabled)
+        } else {
+            modifier(DisableScrolling(disabled: disabled))
+        }
+    }
+}
+
+@available(iOS 13.0, *)
+struct DisableScrolling: ViewModifier {
+    var disabled: Bool
+
+    func body(content: Content) -> some View {
+        if disabled {
+            content
+                .simultaneousGesture(DragGesture(minimumDistance: 0))
+        } else {
+            content
+        }
+    }
+}

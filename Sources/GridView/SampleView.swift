@@ -30,14 +30,14 @@ struct SomeView: View {
         } paginationBlock: {
             print("MENTOK KANAN")
         }
-        .makeGridScrollable(.horizontal)
+        .makeGridScrollable(isParentScrollDisabled: true)
         Spacer()
         GridView(gridData: data, maxRowElement: 4, rowPriorityAlignment: .leading, rowSpacing: 8, columnSpacing: 8) { data in
             SingleContentView(iconColor: data.data.icon, price: "Row: \(data.row) Column: \(data.column)")
         } paginationBlock: {
             print("MENTOK BAWAH")
         }
-        .makeGridScrollable(.vertical)
+        .makeGridScrollable()
     }
 }
 
