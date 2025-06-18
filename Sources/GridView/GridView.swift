@@ -268,7 +268,7 @@ public struct GridView<Content: View, T: Hashable>: View {
     ///     - Only horizontal scroll for column priority
     /// - Parameter isIndicatorShown: For show/hide scroll indicator
     @ViewBuilder
-    func makeGridScrollable(isParentScrollDisabled: Bool = false, isIndicatorShown: Bool = false) -> some View {
+    public func makeGridScrollable(isParentScrollDisabled: Bool = false, isIndicatorShown: Bool = false) -> some View {
         let childAxis: Axis.Set = gridData.accessIsRowPriority() ? .vertical : .horizontal
         let parentAxis: Axis.Set = gridData.accessIsRowPriority() ? .horizontal : .vertical
         
