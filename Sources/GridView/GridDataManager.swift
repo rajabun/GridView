@@ -6,7 +6,7 @@
 //  Copyright © 2025 Muhammad Rajab. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 
 @available(iOS 13.0, *)
 class GridDataManager<T: Hashable>: ObservableObject {
@@ -30,7 +30,7 @@ class GridDataManager<T: Hashable>: ObservableObject {
         dataProcessing()
     }
 
-    public func updateDataArray(updatedData: [T]) {
+    func updateDataArray(updatedData: [T]) {
         self.data = updatedData
         dataProcessing()
     }
@@ -73,4 +73,31 @@ public struct GridDataModel<T: Hashable> {
     public let row: Int
     public let column: Int
     public let data: T
+}
+
+@available(iOS 13.0, *)
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static let defaultValue: CGRect = .zero
+    
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) { }
+}
+
+@available(iOS 13.0, *)
+extension UIWindow {
+    static var current: UIWindow? {
+        for scene in UIApplication.shared.connectedScenes {
+            guard let windowScene = scene as? UIWindowScene else { continue }
+            for window in windowScene.windows {
+                if window.isKeyWindow { return window }
+            }
+        }
+        return nil
+    }
+}
+
+@available(iOS 13.0, *)
+extension UIScreen {
+    static var current: UIScreen? {
+        UIWindow.current?.screen
+    }
 }
