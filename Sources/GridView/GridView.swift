@@ -37,6 +37,26 @@ import SwiftUI
 ///     }
 /// `YourContentView` is your custom view.
 ///
+/// To make this GridView scrollable, you can embed with a scroll view like this:
+///
+///     ScrollView(.horizontal) {
+///         GridView()
+///     }
+///
+/// or you can use `makeGridScrollable` method like this:
+///
+///        GridView(gridData: data,
+///                 maxRowElement: 3,
+///                 rowPriorityAlignment: .top,
+///                 rowSpacing: 8, columnSpacing: 8) { row in
+///                 YourContentView(image: row.data.image,
+///                                 title: row.data.title)
+///        } paginationBlock: {
+///            YourCustomFunction()
+///        }
+///        .makeGridScrollable(.horizontal)
+///
+/// Use `paginationBlock` to trigger your custom function when scroll reached edge
 @available(iOS 13.0, *)
 public struct GridView<Content: View, T: Hashable>: View {
     @ViewBuilder var rowContentView: (GridDataModel<T>) -> any View
