@@ -93,8 +93,7 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.scrollViewWidth = 0
         self.scrollViewHeight = 0
         self.columnPriorityAlignment = .top
-        self.gridData = GridDataManager(isRowPriority: true,
-                                        isColumnPriority: false,
+        self.gridData = GridDataManager(gridPriority: .rowPriority,
                                         maxRowElement: maxRowElement,
                                         maxColumnElement: 0,
                                         data: gridData)
@@ -126,8 +125,7 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.scrollViewWidth = 0
         self.scrollViewHeight = 0
         self.rowPriorityAlignment = .trailing
-        self.gridData = GridDataManager(isRowPriority: false,
-                                        isColumnPriority: true,
+        self.gridData = GridDataManager(gridPriority: .columnPriority,
                                         maxRowElement: 0,
                                         maxColumnElement: maxColumnElement,
                                         data: gridData)
@@ -149,7 +147,8 @@ public struct GridView<Content: View, T: Hashable>: View {
     
     @ViewBuilder
     private func contentView() -> some View {
-        if gridData.accessIsRowPriority() {
+        switch gridData.accessGridPriority() {
+        case .rowPriority:
             VStack(alignment: rowPriorityAlignment, spacing: rowSpacing) { //HStack for based on Column, VStack for Row
                 ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     HStack(spacing: columnSpacing) { //VStack for based on Column, HStack for Row
@@ -174,7 +173,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     paginationBlock()
                 }
             }
-        } else if gridData.accessIsColumnPriority() {
+        case .columnPriority:
             HStack(alignment: columnPriorityAlignment, spacing: columnSpacing) { //HStack for based on Column, VStack for Row
                 ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     VStack(spacing: rowSpacing) { //VStack for based on Column, HStack for Row
@@ -208,7 +207,8 @@ public struct GridView<Content: View, T: Hashable>: View {
     @available(iOS 14.0, *)
     @ViewBuilder
     private func lazyLoadContentView() -> some View {
-        if gridData.accessIsRowPriority() {
+        switch gridData.accessGridPriority() {
+        case .rowPriority:
             LazyVStack(alignment: rowPriorityAlignment, spacing: rowSpacing) {
                 ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     LazyHStack(spacing: columnSpacing) {
@@ -233,7 +233,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     paginationBlock()
                 }
             }
-        } else if gridData.accessIsColumnPriority() {
+        case .columnPriority:
             LazyHStack(alignment: columnPriorityAlignment, spacing: columnSpacing) {
                 ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
                     LazyVStack(spacing: rowSpacing) {
@@ -269,8 +269,8 @@ public struct GridView<Content: View, T: Hashable>: View {
     /// - Parameter isIndicatorShown: For show/hide scroll indicator
     @ViewBuilder
     public func makeGridScrollable(isParentScrollDisabled: Bool = false, isIndicatorShown: Bool = false) -> some View {
-        let childAxis: Axis.Set = gridData.accessIsRowPriority() ? .vertical : .horizontal
-        let parentAxis: Axis.Set = gridData.accessIsRowPriority() ? .horizontal : .vertical
+        let childAxis: Axis.Set = gridData.accessGridPriority() == .rowPriority ? .vertical : .horizontal
+        let parentAxis: Axis.Set = gridData.accessGridPriority() == .rowPriority ? .horizontal : .vertical
         
         ScrollView(parentAxis, showsIndicators: isIndicatorShown) {
             ScrollView(childAxis, showsIndicators: isIndicatorShown) {

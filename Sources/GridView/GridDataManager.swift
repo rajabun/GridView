@@ -10,20 +10,22 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 class GridDataManager<T: Hashable>: ObservableObject {
+    enum GridPriority {
+        case rowPriority, columnPriority
+    }
+    
     @Published private var elementDataArray: [[GridDataModel<T>]]
     private var elementData: [GridDataModel<T>]
-    private var isRowPriority: Bool
-    private var isColumnPriority: Bool
+    private var gridPriority: GridPriority
     private var maxRowElement: Int
     private var maxColumnElement: Int
     private var data: [T]
     
     init(elementDataArray: [[GridDataModel<T>]] = [[]], elementData: [GridDataModel<T>] = [],
-         isRowPriority: Bool, isColumnPriority: Bool, maxRowElement: Int, maxColumnElement: Int, data: [T]) {
+         gridPriority: GridPriority, maxRowElement: Int, maxColumnElement: Int, data: [T]) {
         self.elementDataArray = elementDataArray
         self.elementData = elementData
-        self.isRowPriority = isRowPriority
-        self.isColumnPriority = isColumnPriority
+        self.gridPriority = gridPriority
         self.maxRowElement = maxRowElement
         self.maxColumnElement = maxColumnElement
         self.data = data
@@ -39,14 +41,10 @@ class GridDataManager<T: Hashable>: ObservableObject {
         return elementDataArray
     }
     
-    func accessIsRowPriority() -> Bool {
-        return isRowPriority
+    func accessGridPriority() -> GridPriority {
+        return gridPriority
     }
     
-    func accessIsColumnPriority() -> Bool {
-        return isColumnPriority
-    }
-
     func getElementTotalCount() -> Int {
         return accessElementDataArray().count
     }
@@ -54,6 +52,9 @@ class GridDataManager<T: Hashable>: ObservableObject {
     private func dataProcessing() {
         var indexElement: Int = 1
         var indexMaxElement: Int = 0
+        let isRowPriority = gridPriority == .rowPriority
+        let isColumnPriority = gridPriority == .columnPriority
+        
         for input in data {
             let rowSingleData = GridDataModel(row: isRowPriority ? indexElement : indexMaxElement+1,
                                               column: isColumnPriority ? indexElement : indexMaxElement+1,
