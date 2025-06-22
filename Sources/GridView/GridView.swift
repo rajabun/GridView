@@ -58,8 +58,8 @@ import SwiftUI
 ///
 /// Use `paginationBlock` to trigger your custom function when scroll reached edge
 /// - Important: Trigger custom function when scroll reached edge currently only supported when:
-///   - GridView with row priority is only stacked with other Views inside HStack
-///   - or GridView with column priority is only stacked with other Views inside VStack.
+///   - GridView with row priority is only stacked with other Views inside HStack.
+///   - GridView with column priority is only stacked with other Views inside VStack.
 ///   
 ///   Parameter `paginationBlock` already has a default empty value so this parameter can be skipped.
 @available(iOS 13.0, *)
