@@ -168,7 +168,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     }
             })
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollHeight = (value.height - UIScreen.main.bounds.height) + 96
+                let scrollHeight = (value.height - deviceHeight) + 96
                 let position = -(value.minY)
                 if position == scrollHeight {
                     paginationBlock()
@@ -193,7 +193,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     }
             })
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollWidth = (value.width - (UIScreen.current?.bounds.width ?? 0))
+                let scrollWidth = (value.width - deviceWidth)
                 let position = (-value.minX)
                 if position == scrollWidth {
                     paginationBlock()
@@ -227,7 +227,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     }
             })
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollHeight = (value.height - UIScreen.main.bounds.height) + 96
+                let scrollHeight = (value.height - deviceHeight) + 96
                 let position = -(value.minY)
                 if position == scrollHeight {
                     paginationBlock()
@@ -252,7 +252,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     }
             })
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollWidth = (value.width - (UIScreen.current?.bounds.width ?? 0))
+                let scrollWidth = (value.width - deviceWidth)
                 let position = (-value.minX)
                 if position == scrollWidth {
                     paginationBlock()
