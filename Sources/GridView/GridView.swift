@@ -63,7 +63,7 @@ import Combine
 ///   - GridView with column priority is only stacked with other Views inside VStack.
 ///   
 ///   Parameter `paginationBlock` already has a default empty value so this parameter can be skipped.
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 public struct GridView<Content: View, T: Hashable>: View {
     @ViewBuilder var rowContentView: (GridDataModel<T>) -> any View
     @ViewBuilder var columnContentView: (GridDataModel<T>) -> any View
@@ -185,67 +185,7 @@ public struct GridView<Content: View, T: Hashable>: View {
     }
     
     public var body: some View {
-        if #available(iOS 14.0, *) {
-            lazyLoadContentView()
-        } else {
-            contentView()
-        }
-    }
-    
-    @ViewBuilder
-    private func contentView() -> some View {
-        switch gridData.accessGridPriority() {
-        case .rowPriority:
-            VStack(alignment: rowPriorityAlignment, spacing: rowSpacing) { //HStack for based on Column, VStack for Row
-                ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
-                    HStack(spacing: columnSpacing) { //VStack for based on Column, HStack for Row
-                        ForEach(gridData.accessElementDataArray()[index], id: \.column) { element in
-                            AnyView(rowContentView(element))
-                        }
-                    }
-                }
-            }
-            .background(GeometryReader { geometry in
-                let frame = geometry.frame(in: .named("gridScroll"))
-                Color.clear
-                    .preference(key: ScrollOffsetPreferenceKey.self, value: frame)
-                    .onAppear {
-                        scrollViewHeight = frame.height
-                    }
-            })
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollHeight = (value.height - deviceHeight) + 96
-                let position = -(value.minY)
-                if position == scrollHeight {
-                    paginationBlock()
-                }
-            }
-        case .columnPriority:
-            HStack(alignment: columnPriorityAlignment, spacing: columnSpacing) { //HStack for based on Column, VStack for Row
-                ForEach(Array(gridData.accessElementDataArray().enumerated()), id: \.offset) { index, element in
-                    VStack(spacing: rowSpacing) { //VStack for based on Column, HStack for Row
-                        ForEach(gridData.accessElementDataArray()[index], id: \.row) { element in
-                            AnyView(columnContentView(element))
-                        }
-                    }
-                }
-            }
-            .background(GeometryReader { geometry in
-                let frame = geometry.frame(in: .named("gridScroll"))
-                Color.clear
-                    .preference(key: ScrollOffsetPreferenceKey.self, value: frame)
-                    .onAppear {
-                        scrollViewWidth = frame.width
-                    }
-            })
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollWidth = (value.width - deviceWidth)
-                let position = (-value.minX)
-                if position == scrollWidth {
-                    paginationBlock()
-                }
-            }
-        }
+        lazyLoadContentView()
     }
     
     /// Use this to make contents lazy loaded on grid view. Useful when the received data is large

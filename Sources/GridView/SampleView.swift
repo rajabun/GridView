@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 #Preview {
     SomeView()
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct SomeView: View {
     @State var dataRow: [SomeData] = []
     @State var dataColumn: [SomeData] = []
@@ -44,13 +44,13 @@ struct SomeView: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct SomeData: Hashable {
     let icon: Color
     let price: String
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct SingleContentView: View {
     var iconColor: Color
     var price: String

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 class GridDataManager<T: Hashable>: ObservableObject {
     enum GridPriority {
         case rowPriority, columnPriority
@@ -76,14 +76,14 @@ public struct GridDataModel<T: Hashable> {
     public let data: T
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct ScrollOffsetPreferenceKey: PreferenceKey {
     static let defaultValue: CGRect = .zero
     
     static func reduce(value: inout CGRect, nextValue: () -> CGRect) { }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 extension UIWindow {
     static var current: UIWindow? {
         for scene in UIApplication.shared.connectedScenes {
@@ -96,14 +96,14 @@ extension UIWindow {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 extension UIScreen {
     static var current: UIScreen? {
         UIWindow.current?.screen
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 extension View {
     /// A backwards compatible wrapper for iOS 16 `scrollDisabled`
     @ViewBuilder func disableScrolling(disabled: Bool) -> some View {
@@ -115,7 +115,7 @@ extension View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct DisableScrolling: ViewModifier {
     var disabled: Bool
 
