@@ -14,30 +14,33 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 struct SomeView: View {
-    var data: [SomeData] = [SomeData(icon: .blue, price: "Biru"),
-                            SomeData(icon: .orange, price: "Orange"),
-                            SomeData(icon: .yellow, price: "Kuning"),
-                            SomeData(icon: .blue, price: "Biru"),
-                            SomeData(icon: .orange, price: "Orange"),
-                            SomeData(icon: .yellow, price: "Kuning"),
-                            SomeData(icon: .blue, price: "Biru"),
-                            SomeData(icon: .orange, price: "Orange"),
-                            SomeData(icon: .yellow, price: "Kuning")]
+    @State var dataRow: [SomeData] = []
+    @State var dataColumn: [SomeData] = []
     
     var body: some View {
-        GridView(gridData: data, maxColumnElement: 3, columnPriorityAlignment: .top, rowSpacing: 8, columnSpacing: 8) { data in
+        GridView(gridData: dataColumn, maxColumnElement: 3, columnPriorityAlignment: .top, rowSpacing: 8, columnSpacing: 8) { data in
             SingleContentView(iconColor: data.data.icon, price: "Row: \(data.row) Column: \(data.column)")
         } paginationBlock: {
+            dataColumn.append(SomeData(icon: .yellow, price: "Kuning"))
             print("MENTOK KANAN")
         }
         .makeGridScrollable(isParentScrollDisabled: true)
+        .onAppear {
+            dataColumn = Array(repeating: SomeData(icon: .blue, price: "Biru"), count: 50)
+        }
+        .padding(.all)
         Spacer()
-        GridView(gridData: data, maxRowElement: 4, rowPriorityAlignment: .leading, rowSpacing: 8, columnSpacing: 8) { data in
+        GridView(gridData: dataRow, maxRowElement: 4, rowPriorityAlignment: .leading, rowSpacing: 8, columnSpacing: 8) { data in
             SingleContentView(iconColor: data.data.icon, price: "Row: \(data.row) Column: \(data.column)")
         } paginationBlock: {
+            dataRow.append(SomeData(icon: .red, price: "Merah"))
             print("MENTOK BAWAH")
         }
         .makeGridScrollable()
+        .onAppear {
+            dataRow = Array(repeating: SomeData(icon: .blue, price: "Biru"), count: 50)
+        }
+        .padding(.all)
     }
 }
 
