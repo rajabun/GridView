@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 /// Collection of views based on row and column
 ///
@@ -68,6 +69,7 @@ public struct GridView<Content: View, T: Hashable>: View {
     @ViewBuilder var columnContentView: (GridDataModel<T>) -> any View
     @State var scrollViewWidth: CGFloat
     @State var scrollViewHeight: CGFloat
+    @State var isScrollReachedEdge: Bool
     var deviceWidth: CGFloat
     var deviceHeight: CGFloat
     var gridData: GridDataManager<T>
@@ -76,6 +78,9 @@ public struct GridView<Content: View, T: Hashable>: View {
     var rowSpacing: CGFloat
     var columnSpacing: CGFloat
     var paginationBlock: (() -> Void)
+    var cancellables: AnyCancellable?
+    let detector: CurrentValueSubject<CGRect, Never>
+    let publisher: AnyPublisher<CGRect, Never>
     
     /// Use this to make the grid prioritize the row to be filled.
     ///
@@ -97,6 +102,7 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.deviceHeight = UIScreen.current?.bounds.height ?? 0
         self.scrollViewWidth = 0
         self.scrollViewHeight = 0
+        self.isScrollReachedEdge = false
         self.columnPriorityAlignment = .top
         self.gridData = GridDataManager(gridPriority: .rowPriority,
                                         maxRowElement: maxRowElement,
@@ -107,6 +113,24 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.columnSpacing = columnSpacing
         self.rowContentView = rowContentView
         self.paginationBlock = paginationBlock
+        
+        let detector = CurrentValueSubject<CGRect, Never>(.zero)
+        self.publisher = detector
+            .debounce(for: .seconds(0.1), scheduler: DispatchQueue.main)
+            .dropFirst()
+            .eraseToAnyPublisher()
+        self.detector = detector
+        
+        self.cancellables = self.publisher
+            .receive(on: DispatchQueue.main)
+            .sink { [self] value in
+                let scrollHeight = (value.height - deviceHeight)
+                let position = -(value.minY)
+                if position > scrollHeight && position > 0 && !isScrollReachedEdge {
+                    isScrollReachedEdge = true
+                    paginationBlock()
+                }
+            }
     }
     
     /// Use this to make the grid prioritize the column to be filled.
@@ -129,6 +153,7 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.deviceHeight = UIScreen.current?.bounds.height ?? 0
         self.scrollViewWidth = 0
         self.scrollViewHeight = 0
+        self.isScrollReachedEdge = false
         self.rowPriorityAlignment = .trailing
         self.gridData = GridDataManager(gridPriority: .columnPriority,
                                         maxRowElement: 0,
@@ -139,12 +164,29 @@ public struct GridView<Content: View, T: Hashable>: View {
         self.columnSpacing = columnSpacing
         self.columnContentView = columnContentView
         self.paginationBlock = paginationBlock
+        
+        let detector = CurrentValueSubject<CGRect, Never>(.zero)
+        self.publisher = detector
+            .debounce(for: .seconds(0.1), scheduler: DispatchQueue.main)
+            .dropFirst()
+            .eraseToAnyPublisher()
+        self.detector = detector
+        
+        self.cancellables = self.publisher
+            .receive(on: DispatchQueue.main)
+            .sink { [self] value in
+                let scrollWidth = (value.width - deviceWidth) - 32
+                let position = -(value.minX)
+                if position > scrollWidth && position > 0 && !isScrollReachedEdge {
+                    isScrollReachedEdge = true
+                    paginationBlock()
+                }
+            }
     }
     
     public var body: some View {
         if #available(iOS 14.0, *) {
             lazyLoadContentView()
-                .padding(.leading, 8)
         } else {
             contentView()
         }
@@ -232,11 +274,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     }
             })
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollHeight = (value.height - deviceHeight) + 96
-                let position = -(value.minY)
-                if position == scrollHeight {
-                    paginationBlock()
-                }
+                detector.send(value)
             }
         case .columnPriority:
             LazyHStack(alignment: columnPriorityAlignment, spacing: columnSpacing) {
@@ -257,11 +295,7 @@ public struct GridView<Content: View, T: Hashable>: View {
                     }
             })
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                let scrollWidth = (value.width - deviceWidth)
-                let position = (-value.minX)
-                if position == scrollWidth {
-                    paginationBlock()
-                }
+                detector.send(value)
             }
         }
     }
@@ -280,6 +314,11 @@ public struct GridView<Content: View, T: Hashable>: View {
         ScrollView(parentAxis, showsIndicators: isIndicatorShown) {
             ScrollView(childAxis, showsIndicators: isIndicatorShown) {
                 self
+                    .onReceive(publisher) { _ in
+                        if isScrollReachedEdge {
+                            isScrollReachedEdge = false
+                        }
+                    }
             }
             .coordinateSpace(name: "gridScroll")
         }
